@@ -13,5 +13,5 @@
 ## Usage
 
 ```bash
-chmod +x auto-install.sh
-./auto-install.sh
+chmod +x frontend-pack.sh
+./frontend-pack.sh
