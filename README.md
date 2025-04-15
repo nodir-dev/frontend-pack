@@ -5,6 +5,7 @@
 - Google Chrome
 - VS Code
 - Node.js (LTS)
+- Plank
 - Telegram Desktop
 - Snap
 
