@@ -1,8 +1,22 @@
 #!/bin/bash
 
-# Faqat yashil rang
+# Ranglar
 GREEN='\033[0;32m'
-NC='\033[0m' # rangni tiklash
+NC='\033[0m' # Rangni tiklash
+
+# ASCII san’at (banner)
+clear
+echo -e "${GREEN}"
+cat << "EOF"
+ ░▒▓██████▓▒░ ░▒▓██████▓▒░       ░▒▓█▓▒░░▒▓██████▓▒░             ░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░      ░▒▓██████▓▒░░▒▓███████▓▒░░▒▓████████▓▒░▒▓███████▓▒░  
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░       ░▒▓█▓▒▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒▒▓███▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓██████▓▒░  ░▒▓█▓▒▒▓█▓▒░░▒▓██████▓▒░ ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓██████▓▒░ ░▒▓███████▓▒░  
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        ░▒▓█▓▓█▓▒░ ░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        ░▒▓█▓▓█▓▒░ ░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
+ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░             ░▒▓███████▓▒░░▒▓████████▓▒░  ░▒▓██▓▒░  ░▒▓████████▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+EOF
+echo -e "${NC}"
 
 # Progress bar funksiyasi
 progress_bar() {
@@ -21,7 +35,7 @@ progress_bar() {
 # Sarlavha
 echo -e "${GREEN}"
 echo "╔═══════════════════════════════════════════════════════╗"
-echo "║         Linux Mint uchun avtomatik o‘rnatish          ║"
+echo "║         Linux uchun avtomatik o‘rnatish          ║"
 echo "╚═══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 sleep 1
@@ -59,17 +73,15 @@ echo -e "${GREEN}[5/7] Plank (dock) o‘rnatilmoqda...${NC}"
 sudo apt install plank -y
 progress_bar 2
 
-# 6. Telegram Desktop (tar.xz orqali)
+# 6. Telegram Desktop
 echo -e "${GREEN}[6/7] Telegram Desktop o‘rnatilmoqda (.tar.xz)...${NC}"
 wget -O telegram.tar.xz https://telegram.org/dl/desktop/linux
 sudo mkdir -p /opt/telegram
 sudo tar -xf telegram.tar.xz -C /opt/telegram
 rm telegram.tar.xz
 
-# Telegram symlink
 sudo ln -sf /opt/telegram/Telegram/Telegram /usr/bin/telegram
 
-# Telegram .desktop fayl
 cat <<EOF | sudo tee /usr/share/applications/telegram.desktop > /dev/null
 [Desktop Entry]
 Name=Telegram Desktop
@@ -80,11 +92,6 @@ Terminal=false
 Type=Application
 Categories=Network;InstantMessaging;
 EOF
-progress_bar 2
-
-# 7. Snap o‘rnatish (oxirida)
-echo -e "${GREEN}[7/7] Snap o‘rnatilmoqda...${NC}"
-sudo apt install snapd -y
 progress_bar 2
 
 # Tamom
