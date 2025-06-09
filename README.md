@@ -7,9 +7,8 @@
 - Node.js (LTS)
 - Plank
 - Telegram Desktop
-- Snap
 
-✅ Automatically updates system and displays a nice green progress bar.
+✅ Automatically updates system 
 
 ## Usage
 
