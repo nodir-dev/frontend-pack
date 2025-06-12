@@ -1,17 +1,33 @@
 #!/bin/bash
 
-set -euo pipefail
-trap 'echo -e "\n❌ Xatolik yuz berdi. Skript to‘xtadi." >&2' ERR
-
+# Ranglar
 GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m'
+NC='\033[0m' # Rangni tiklash
 
+# Clear terminal va logo
+clear
+echo -e "${GREEN}"
+cat << "EOF"
+ .----------------.  .----------------.  .----------------.  .----------------.                .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
+| .--------------.  .--------------.  .--------------.  .--------------. |              | .--------------.  .--------------.  .--------------.  .--------------.  .--------------.  .--------------.  .--------------.  .--------------.  .--------------. |
+| |    ______    |  |     ____     |  |     _____    |  |     ____     | |              | |  ________    |  |  _________   |  | ____   ____  |  |  _________   |  |   _____      |  |     ____     |  |   ______     |  |  _________   |  |  _______     | |
+| |  .' ___  |   |  |   .'    `.   |  |    |_   _|   |  |   .'    `.   | |              | | |_   ___ `.  |  | |_   ___  |  |  ||_  _| |_  _| |  | |_   ___  |  |  |  |_   _|     |  |   .'    `.   |  |  |_   __ \   |  | |_   ___  |  |  | |_   __ \    | |
+| | / .'   \_|   |  |  /  .--.  \  |  |      | |     |  |  /  .--.  \  | |              | |   | |   `. \ |  |   | |_  \_|  |  |  \ \   / /   |  |   | |_  \_|  |  |    | |       |  |  /  .--.  \  |  |    | |) |  | || |   | |_  \_|  | || |   | |) |   | |
+| | | |    ____  |  |  | |    | |  |  |   _  | |     |  |  | |    | |  | |              | |   | |    | | |  |   |  _|  _   |  |   \ \ / /    |  |   |  _|  _   |  |    | |   _   |  |  | |    | |  |  |    |  ___/   |  |   |  _|  _   |  |   |  __ /    | |
+| | \ `.___]  _| |  |  \  `--'  /  |  |  | |_' |     |  |  \  --'  /  | |              | |  _| |___.' / | || |  _| |___/ |  | || |    \ ' /     | || |  _| |___/ |  | || |   _| |__/ |  | || |  \  --'  /  | || |   _| |_      |  |  _| |___/ |  |  |  _| |  \ \_  | |
+| |  ._____.'   | || |   .____.'   | || |  .___.'     | || |   .____.'   | |              | | |________.'  | || | |_________|  |  |     \_/      |  | |_________|  |  |  |________|  |  |   `.____.'   |  |  |_____|     |  | |_________|  |  | |____| |___| | |
+| |              |  |              |  |              |  |              | |              | |              |  |              |  |              |  |              |  |              |  |              |  |              |  |              |  |              | |
+| '--------------'  '--------------'  '--------------'  '--------------' |              | '--------------'  '--------------'  '--------------'  '--------------'  '--------------'  '--------------'  '--------------'  '--------------' || '--------------' |
+ '----------------'  '----------------'  '----------------'  '----------------'                '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'     
+EOF
+echo -e "${NC}"
+
+# Progress bar funksiyasi
 progress_bar() {
   local duration=$1
   local i=0
   while [ $i -le 100 ]; do
-    n=$((i / 2))
+    n=$((i/2))
     bar=$(printf "%-${n}s" | tr ' ' '=')
     printf "\r${GREEN}[%-50s] %d%%${NC}" "$bar" "$i"
     sleep $(bc <<< "$duration / 100")
@@ -20,74 +36,42 @@ progress_bar() {
   echo ""
 }
 
+# Paket mavjudligini tekshiruvchi funksiya
 is_installed() {
   dpkg -s "$1" &> /dev/null
 }
 
+# .desktop fayl bilan tekshiruvchi funksiya (Telegram uchun)
 desktop_exists() {
   [[ -f "/usr/share/applications/$1" ]]
 }
 
-print_step() {
-  local step_num=$1
-  local total_steps=6
-  local msg=$2
-  clear
-  echo -e "${GREEN}[${step_num}/${total_steps}] ${msg}${NC}"
-}
+echo -e "${GREEN}\n🔧 O‘rnatish jarayoni boshlanmoqda...\n${NC}"
 
-install_package() {
-  local step_num=$1
-  local name=$2
-  local command=$3
+# 1. Yangilanish
+echo -e "${GREEN}[1/6] Yangilanishlar tekshirilmoqda...${NC}"
+sudo apt update && sudo apt upgrade -y
+progress_bar 2
 
-  print_step "$step_num" "$name o‘rnatilmoqda..."
-  # O‘rnatish chiqishini vaqtincha faylga yo‘naltiramiz
-  if ! eval "$command" &> /tmp/install_log; then
-    echo -e "${RED}❌ $name o‘rnatishda xatolik yuz berdi! Batafsil: /tmp/install_log${NC}"
-    exit 1
-  fi
-  progress_bar 2
-}
-
-# Banner
-clear
-echo -e "${GREEN}"
-cat << "EOF"
- ░▒▓██████▓▒░ ░▒▓██████▓▒░       ░▒▓█▓▒░░▒▓██████▓▒░             ░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░      ░▒▓██████▓▒░░▒▓███████▓▒░░▒▓████████▓▒░▒▓███████▓▒░  
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░       ░▒▓█▓▒▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒▒▓███▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓██████▓▒░  ░▒▓█▓▒▒▓█▓▒░░▒▓██████▓▒░ ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓██████▓▒░ ░▒▓███████▓▒░  
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        ░▒▓█▓▓█▓▒░ ░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░            ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        ░▒▓█▓▓█▓▒░ ░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
- ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░             ░▒▓███████▓▒░░▒▓████████▓▒░  ░▒▓██▓▒░  ░▒▓████████▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-EOF
-echo -e "${NC}"
-
-# --- Amaliyotlarni tartib bilan bajarish ---
-
-# 1. Node.js
+# 2. Node.js
 if is_installed nodejs; then
-  print_step 1 "Node.js allaqachon o‘rnatilgan."
-  progress_bar 2
+  echo -e "${GREEN}[2/6] Node.js allaqachon o‘rnatilgan.${NC}"
 else
-  install_package 1 "Node.js" "
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - &&
-    sudo apt install -y nodejs"
-fi
-
-# 2. Telegram Desktop
+  echo -e "${GREEN}[2/6] Node.js (LTS) o‘rnatilmoqda...${NC}"
+  curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+  sudo apt install -y nodejs
+  progress_bar 2# 3. Telegram Desktop
 if desktop_exists "telegram.desktop"; then
-  print_step 2 "Telegram Desktop allaqachon o‘rnatilgan."
-  progress_bar 2
+  echo -e "${GREEN}[3/6] Telegram Desktop allaqachon o‘rnatilgan.${NC}"
 else
-  install_package 2 "Telegram Desktop" "
-    curl -fsSLo telegram.tar.xz https://telegram.org/dl/desktop/linux &&
-    sudo mkdir -p /opt/telegram &&
-    sudo tar -xf telegram.tar.xz -C /opt/telegram &&
-    rm telegram.tar.xz &&
-    sudo ln -sf /opt/telegram/Telegram/Telegram /usr/bin/telegram &&
-    cat <<EOF2 | sudo tee /usr/share/applications/telegram.desktop > /dev/null
+  echo -e "${GREEN}[3/6] Telegram Desktop o‘rnatilmoqda...${NC}"
+  wget -O telegram.tar.xz https://telegram.org/dl/desktop/linux
+  sudo mkdir -p /opt/telegram
+  sudo tar -xf telegram.tar.xz -C /opt/telegram
+  rm telegram.tar.xz
+  sudo ln -sf /opt/telegram/Telegram/Telegram /usr/bin/telegram
+
+  cat <<EOF | sudo tee /usr/share/applications/telegram.desktop > /dev/null
 [Desktop Entry]
 Name=Telegram Desktop
 Comment=Telegram messaging app
@@ -96,46 +80,56 @@ Icon=/opt/telegram/Telegram/telegram.png
 Terminal=false
 Type=Application
 Categories=Network;InstantMessaging;
-EOF2"
+EOF
+  progress_bar 2
 fi
 
-# 3. VS Code
+# 4. Visual Studio Code
 if is_installed code; then
-  print_step 3 "Visual Studio Code allaqachon o‘rnatilgan."
-  progress_bar 2
+  echo -e "${GREEN}[4/6] Visual Studio Code allaqachon o‘rnatilgan.${NC}"
 else
-  install_package 3 "VS Code" "
-    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null &&
-    echo 'deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main' | sudo tee /etc/apt/sources.list.d/vscode.list &&
-    sudo apt update &&
-    sudo apt install code -y"
+  echo -e "${GREEN}[4/6] Visual Studio Code o‘rnatilmoqda...${NC}"
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+  sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+  sudo apt update
+  sudo apt install code -y
+  rm packages.microsoft.gpg
+  progress_bar 2
 fi
 
-# 4. Google Chrome
+# 5. Google Chrome
 if is_installed google-chrome-stable; then
-  print_step 4 "Google Chrome allaqachon o‘rnatilgan."
-  progress_bar 2
+  echo -e "${GREEN}[5/6] Google Chrome allaqachon o‘rnatilgan.${NC}"
 else
-  install_package 4 "Google Chrome" "
-    curl -fsSLo chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&
-    sudo apt install ./chrome.deb -y &&
-    rm chrome.deb"
+  echo -e "${GREEN}[5/6] Google Chrome o‘rnatilmoqda...${NC}"
+  wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  sudo apt install ./google-chrome-stable_current_amd64.deb -y
+  rm google-chrome-stable_current_amd64.deb
+  progress_bar 2
 fi
 
-# 5. Plank
+# 6. Plank
 if is_installed plank; then
-  print_step 5 "Plank allaqachon o‘rnatilgan."
-  progress_bar 2
+  echo -e "${GREEN}[6/6] Plank allaqachon o‘rnatilgan.${NC}"
 else
-  install_package 5 "Plank" "sudo apt install plank -y"
+  echo -e "${GREEN}[6/6] Plank (dock) o‘rnatilmoqda...${NC}"
+  sudo apt install plank -y
+  progress_bar 2
 fi
 
-# 6. Yangilanishlar (oxirgi qadam)
-print_step 6 "Yangilanishlar tekshirilmoqda..."
-sudo apt update && sudo apt upgrade -y
-progress_bar 2
-
-# Yakuniy xabar
+# Ish yakuni va terminalni tozalash uchun 3 sekund kutish
+echo -e "${GREEN}\n🎉 Barcha kerakli dasturlar o‘rnatildi yoki allaqachon mavjud edi!"
+echo "🚀 Endi sizning Linux tizimingiz tayyor!${NC}"
+sleep 3
 clear
-echo -e "${GREEN}🎉 Barcha kerakli dasturlar o‘rnatildi yoki allaqachon mavjud edi!"
-echo -e "🚀 Endi sizning Linux tizimingiz tayyor!${NC}"
+
+# Oxirida 1 dan 6 gacha amaliyot progress bar’larini ozgina ko‘rsatish
+echo -e "${GREEN}🔧 Amaliyot holati:${NC}"
+for i in {1..6}; do
+  printf "${GREEN}[${i}/6] ======================== 100%%${NC}\n"
+  sleep 0.3
+done
+
+echo -e "${GREEN}\n👍 Jarayon tugadi!${NC}"
+fi
